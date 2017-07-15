@@ -16,7 +16,7 @@ public class InventoryActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_inventory);
 
         ProductAdapter productAdapter = new ProductAdapter(this, getDummyProducts());
         ListView listView = (ListView) findViewById(R.id.product_list);
