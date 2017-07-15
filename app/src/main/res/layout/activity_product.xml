@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:mContext="com.market.android.inventory.activity.ProductActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/padding_default">
+
+        <TextView
+            style="@style/InputLabelStyle"
+            android:text="@string/product_name"/>
+
+        <EditText
+            android:id="@+id/edit_product_name"
+            style="@style/InputFieldStyle"
+            android:inputType="textCapWords"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/padding_default">
+
+        <TextView
+            style="@style/InputLabelStyle"
+            android:text="@string/product_price"/>
+
+        <EditText
+            android:id="@+id/edit_product_price"
+            style="@style/InputFieldStyle"
+            android:inputType="number"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/padding_default">
+
+        <TextView
+            style="@style/InputLabelStyle"
+            android:text="@string/supplier_e_mail"/>
+
+        <EditText
+            android:id="@+id/edit_product_supplier"
+            style="@style/InputFieldStyle"
+            android:inputType="textEmailAddress"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/padding_default">
+
+        <TextView
+            style="@style/InputLabelStyle"
+            android:text="@string/product_quantity"/>
+
+        <EditText
+            android:id="@+id/edit_product_quantity"
+            style="@style/InputFieldStyle"
+            android:inputType="number"/>
+
+    </LinearLayout>
+
+</LinearLayout>

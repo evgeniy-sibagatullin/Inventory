@@ -16,6 +16,13 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <activity
+            android:name=".activity.ProductActivity"
+            android:parentActivityName=".activity.InventoryActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.InventoryActivity"/>
+        </activity>
     </application>
 
 </manifest>
