@@ -1,0 +1,8 @@
+<resources>
+    <dimen name="margin_default">8dp</dimen>
+    <dimen name="padding_default">8dp</dimen>
+    <dimen name="sale_button_height">36dp</dimen>
+
+    <dimen name="font_size_small">12sp</dimen>
+    <dimen name="font_size_default">16sp</dimen>
+</resources>
