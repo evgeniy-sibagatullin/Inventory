@@ -16,14 +16,12 @@ import java.util.List;
 
 public class InventoryActivity extends AppCompatActivity {
 
+    public static final String EXTRA_KEY_PRODUCT = "extra_key_product";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inventory);
-
-        ProductAdapter productAdapter = new ProductAdapter(this, getDummyProducts());
-        ListView listView = (ListView) findViewById(R.id.product_list);
-        listView.setAdapter(productAdapter);
 
         Button addProductButton = (Button) findViewById(R.id.add_product);
         addProductButton.setOnClickListener(new View.OnClickListener() {
@@ -33,6 +31,10 @@ public class InventoryActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        ProductAdapter productAdapter = new ProductAdapter(this, getDummyProducts());
+        ListView listView = (ListView) findViewById(R.id.product_list);
+        listView.setAdapter(productAdapter);
     }
 
     private List<Product> getDummyProducts() {

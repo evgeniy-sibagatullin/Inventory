@@ -1,6 +1,8 @@
 package com.market.android.inventory.model;
 
-public class Product {
+import java.io.Serializable;
+
+public class Product implements Serializable {
 
     private final String name;
     private final int price;
