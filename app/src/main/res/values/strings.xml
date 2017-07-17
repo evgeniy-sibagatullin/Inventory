@@ -4,7 +4,7 @@
     <string name="product_name">Product name</string>
     <string name="product_price">Price</string>
     <string name="product_quantity">Q-ty</string>
-    <string name="supplier_e_mail">Supplier e-mail</string>
+    <string name="product_supplier_mail">Supplier mail</string>
 
     <string name="dollar">$</string>
 

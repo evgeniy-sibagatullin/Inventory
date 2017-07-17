@@ -46,10 +46,10 @@
 
         <TextView
             style="@style/InputLabelStyle"
-            android:text="@string/supplier_e_mail"/>
+            android:text="@string/product_supplier_mail"/>
 
         <EditText
-            android:id="@+id/edit_product_supplier"
+            android:id="@+id/edit_product_supplier_mail"
             style="@style/InputFieldStyle"
             android:inputType="textEmailAddress"/>
 

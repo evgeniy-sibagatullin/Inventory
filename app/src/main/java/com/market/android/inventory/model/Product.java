@@ -6,11 +6,13 @@ public class Product implements Serializable {
 
     private final String name;
     private final int price;
+    private final String supplierMail;
     private final int quantity;
 
-    public Product(String name, int price, int quantity) {
+    public Product(String name, int price, String supplierMail, int quantity) {
         this.name = name;
         this.price = price;
+        this.supplierMail = supplierMail;
         this.quantity = quantity;
     }
 
@@ -20,6 +22,10 @@ public class Product implements Serializable {
 
     public int getPrice() {
         return price;
+    }
+
+    public String getSupplierMail() {
+        return supplierMail;
     }
 
     public int getQuantity() {
@@ -32,13 +38,18 @@ public class Product implements Serializable {
         if (o == null || getClass() != o.getClass()) return false;
 
         Product product = (Product) o;
-        return price == product.price && quantity == product.quantity && name.equals(product.name);
+
+        return price == product.price &&
+                quantity == product.quantity &&
+                name.equals(product.name) &&
+                supplierMail.equals(product.supplierMail);
     }
 
     @Override
     public int hashCode() {
         int result = name.hashCode();
         result = 31 * result + price;
+        result = 31 * result + supplierMail.hashCode();
         result = 31 * result + quantity;
         return result;
     }
@@ -48,6 +59,7 @@ public class Product implements Serializable {
         return "Product{" +
                 "name='" + name + '\'' +
                 ", price=" + price +
+                ", supplierMail='" + supplierMail + '\'' +
                 ", quantity=" + quantity +
                 '}';
     }

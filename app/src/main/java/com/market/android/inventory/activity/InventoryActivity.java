@@ -39,9 +39,9 @@ public class InventoryActivity extends AppCompatActivity {
 
     private List<Product> getDummyProducts() {
         List<Product> products = new ArrayList<>();
-        products.add(new Product("Apple", 10, 500));
-        products.add(new Product("Banana", 30, 10));
-        products.add(new Product("Orange", 20, 35));
+        products.add(new Product("Apple", 10, "someTitle@apple.com", 500));
+        products.add(new Product("Banana", 30, "otherTitle@banana.com", 10));
+        products.add(new Product("Orange", 20, "lastTitle@orange.com", 35));
         return products;
     }
 }

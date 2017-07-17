@@ -35,6 +35,9 @@ public class ProductActivity extends AppCompatActivity {
                 EditText productPrice = (EditText) findViewById(R.id.edit_product_price);
                 productPrice.setText(Integer.toString(product.getPrice()));
 
+                EditText productSupplierMail = (EditText) findViewById(R.id.edit_product_supplier_mail);
+                productSupplierMail.setText(product.getSupplierMail());
+
                 EditText productQuatity = (EditText) findViewById(R.id.edit_product_quantity);
                 productQuatity.setText(Integer.toString(product.getQuantity()));
             }
