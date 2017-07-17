@@ -47,19 +47,19 @@ public final class ProductProvider extends ContentProvider {
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection,
                         @Nullable String[] selectionArgs, @Nullable String sortOrder) {
-        SQLiteDatabase database = mDbHelper.getReadableDatabase();
-        Cursor cursor;
-
         switch (sUriMatcher.match(uri)) {
             case PRODUCTS:
-                cursor = database.query(TABLE_NAME, projection, selection, selectionArgs,
-                        null, null, sortOrder);
+                break;
+            case PRODUCT_ID:
+                selection = ProductEntry._ID + "=?";
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
                 break;
             default:
                 throw new IllegalArgumentException("Cannot query unknown URI " + uri);
         }
 
-        return cursor;
+        return mDbHelper.getReadableDatabase().query(TABLE_NAME, projection, selection,
+                selectionArgs, null, null, sortOrder);
     }
 
     @Nullable
@@ -96,7 +96,7 @@ public final class ProductProvider extends ContentProvider {
         }
 
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
-        long id = database.insert(ProductEntry.TABLE_NAME, null, contentValues);
+        long id = database.insert(TABLE_NAME, null, contentValues);
         if (id == -1) {
             Log.e(LOG_TAG, "Failed to insert row for " + uri);
             return null;
@@ -107,8 +107,25 @@ public final class ProductProvider extends ContentProvider {
     }
 
     @Override
-    public int delete(@NonNull Uri uri, @Nullable String s, @Nullable String[] strings) {
-        return 0;
+    public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
+        SQLiteDatabase database = mDbHelper.getWritableDatabase();
+        int rowsDeleted;
+
+        switch (sUriMatcher.match(uri)) {
+            case PRODUCT_ID:
+                selection = ProductEntry._ID + "=?";
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
+                rowsDeleted = database.delete(TABLE_NAME, selection, selectionArgs);
+                break;
+            default:
+                throw new IllegalArgumentException("Deletion is not supported for " + uri);
+        }
+
+        if (rowsDeleted != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+
+        return rowsDeleted;
     }
 
     @Override
