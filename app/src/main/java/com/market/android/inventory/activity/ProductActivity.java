@@ -1,6 +1,7 @@
 package com.market.android.inventory.activity;
 
 import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -15,12 +16,22 @@ import android.widget.Toast;
 
 import com.market.android.inventory.R;
 import com.market.android.inventory.data.ProductContract.ProductEntry;
+import com.market.android.inventory.model.Product;
+
+import java.util.regex.Pattern;
 
 import static com.market.android.inventory.data.ProductContract.ProductEntry.PROJECTION;
 
 public class ProductActivity extends AppCompatActivity {
 
+    private static final String MAIL_REG_EXP = "^[_A-Za-z0-9-+]+(\\.[_A-Za-z0-9-]+)*@"
+            + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+
     private Uri mCurrentProductUri;
+    private EditText mProductName;
+    private EditText mProductPrice;
+    private EditText mProductSupplierMail;
+    private EditText mProductQuatity;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -34,6 +45,11 @@ public class ProductActivity extends AppCompatActivity {
                 R.string.add_product :
                 R.string.edit_product));
 
+        mProductName = (EditText) findViewById(R.id.edit_product_name);
+        mProductPrice = (EditText) findViewById(R.id.edit_product_price);
+        mProductSupplierMail = (EditText) findViewById(R.id.edit_product_supplier_mail);
+        mProductQuatity = (EditText) findViewById(R.id.edit_product_quantity);
+
         if (mCurrentProductUri != null) {
             Cursor cursor = getContentResolver().query(mCurrentProductUri, PROJECTION, null, null, null);
 
@@ -42,14 +58,11 @@ public class ProductActivity extends AppCompatActivity {
                 int priceColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_PRICE);
                 int supplierMailColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_SUPPLIER_MAIL);
                 int quantityColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_QUANTITY);
-                EditText productName = (EditText) findViewById(R.id.edit_product_name);
-                productName.setText(cursor.getString(nameColumnIndex));
-                EditText productPrice = (EditText) findViewById(R.id.edit_product_price);
-                productPrice.setText(Integer.toString(cursor.getInt(priceColumnIndex)));
-                EditText productSupplierMail = (EditText) findViewById(R.id.edit_product_supplier_mail);
-                productSupplierMail.setText(cursor.getString(supplierMailColumnIndex));
-                EditText productQuatity = (EditText) findViewById(R.id.edit_product_quantity);
-                productQuatity.setText(Integer.toString(cursor.getInt(quantityColumnIndex)));
+
+                mProductName.setText(cursor.getString(nameColumnIndex));
+                mProductPrice.setText(Integer.toString(cursor.getInt(priceColumnIndex)));
+                mProductSupplierMail.setText(cursor.getString(supplierMailColumnIndex));
+                mProductQuatity.setText(Integer.toString(cursor.getInt(quantityColumnIndex)));
             }
 
             cursor.close();
@@ -79,27 +92,74 @@ public class ProductActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_save:
-//                savePet();
-                finish();
+                if (saveProduct()) {
+                    finish();
+                }
                 return true;
             case R.id.action_delete:
                 showDeleteConfirmationDialog();
                 return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private boolean saveProduct() {
+        Product product;
+        try {
+            product = prepareAndValidateProduct();
+        } catch (IllegalArgumentException ex) {
+            Toast.makeText(this, ex.getMessage(), Toast.LENGTH_SHORT).show();
+            return false;
         }
 
-        return super.onOptionsItemSelected(item);
+        if (mCurrentProductUri == null) {
+            insertProduct(product);
+        } else {
+            updateProduct(product);
+        }
+
+        return true;
+    }
+
+    private Product prepareAndValidateProduct() throws IllegalArgumentException {
+        String name = mProductName.getText().toString().trim();
+        if (name.isEmpty()) {
+            throw new IllegalArgumentException(getString(R.string.enter_name));
+        }
+
+        String priceStr = mProductPrice.getText().toString().trim();
+        if (priceStr.isEmpty() || priceStr.startsWith("-")) {
+            throw new IllegalArgumentException(getString(R.string.enter_price));
+        }
+        int price = Integer.parseInt(priceStr);
+
+        String supplierMail = mProductSupplierMail.getText().toString().trim();
+        if (supplierMail.isEmpty() || !isEmailValid(supplierMail)) {
+            throw new IllegalArgumentException(getString(R.string.enter_mail));
+        }
+
+        String quantityStr = mProductQuatity.getText().toString().trim();
+        if (quantityStr.isEmpty() || quantityStr.startsWith("-")) {
+            throw new IllegalArgumentException(getString(R.string.enter_quantity));
+        }
+        int quantity = quantityStr.isEmpty() ? 0 : Integer.parseInt(quantityStr);
+
+        return new Product(name, price, supplierMail, quantity);
+    }
+
+    public boolean isEmailValid(String email) {
+        return Pattern.compile(MAIL_REG_EXP, Pattern.CASE_INSENSITIVE).matcher(email).matches();
     }
 
     private void showDeleteConfirmationDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(R.string.product_delete_request);
-
         builder.setPositiveButton(R.string.action_delete, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 deleteProduct();
             }
         });
-
         builder.setNegativeButton(R.string.action_cancel, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 if (dialog != null) {
@@ -107,18 +167,28 @@ public class ProductActivity extends AppCompatActivity {
                 }
             }
         });
+        builder.create().show();
+    }
 
-        AlertDialog alertDialog = builder.create();
-        alertDialog.show();
+    private ContentValues prepareProductValues(Product product) {
+        ContentValues values = new ContentValues();
+        values.put(ProductEntry.COLUMN_PRODUCT_NAME, product.getName());
+        values.put(ProductEntry.COLUMN_PRODUCT_PRICE, product.getPrice());
+        values.put(ProductEntry.COLUMN_PRODUCT_SUPPLIER_MAIL, product.getSupplierMail());
+        values.put(ProductEntry.COLUMN_PRODUCT_QUANTITY, product.getQuantity());
+        return values;
+    }
+
+    private void insertProduct(Product product) {
+        getContentResolver().insert(ProductEntry.CONTENT_URI, prepareProductValues(product));
+    }
+
+    private void updateProduct(Product product) {
+        getContentResolver().update(ProductEntry.CONTENT_URI, prepareProductValues(product), null, null);
     }
 
     private void deleteProduct() {
-        if (mCurrentProductUri != null) {
-            int rowsDeleted = getContentResolver().delete(mCurrentProductUri, null, null);
-            Toast.makeText(this, getString(rowsDeleted == 0 ? R.string.product_delete_failed :
-                    R.string.product_delete_succeeded), Toast.LENGTH_SHORT).show();
-        }
-
+        getContentResolver().delete(mCurrentProductUri, null, null);
         finish();
     }
 }

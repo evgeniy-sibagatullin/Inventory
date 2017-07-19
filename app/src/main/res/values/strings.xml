@@ -19,6 +19,11 @@
     <string name="action_delete">Delete</string>
     <string name="action_save">Save</string>
 
+    <string name="enter_name">Enter a name please</string>
+    <string name="enter_price">Enter a positive price please</string>
+    <string name="enter_mail">Enter a valid e-mail please</string>
+    <string name="enter_quantity">Enter positive quantity please</string>
+
     <string name="product_delete_request">Delete product?</string>
     <string name="product_delete_failed">Product delete failed</string>
     <string name="product_delete_succeeded">Product delete succeeded</string>
