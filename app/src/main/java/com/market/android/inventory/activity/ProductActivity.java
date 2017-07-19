@@ -92,7 +92,7 @@ public class ProductActivity extends AppCompatActivity {
 
     private void showDeleteConfirmationDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(R.string.delete_product_request);
+        builder.setMessage(R.string.product_delete_request);
 
         builder.setPositiveButton(R.string.action_delete, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {

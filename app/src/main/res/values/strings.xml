@@ -7,17 +7,19 @@
     <string name="product_supplier_mail">Supplier mail</string>
 
     <string name="dollar">$</string>
-
     <string name="sale">Sale</string>
+
+    <string name="empty_inventory">It\'s a bit empty here</string>
+    <string name="get_started">Get started by adding a product</string>
 
     <string name="add_product">Add Product</string>
     <string name="edit_product">Edit Product</string>
 
-    <string name="product_delete_failed">Product delete failed</string>
-    <string name="product_delete_succeeded">Product delete succeeded</string>
-
     <string name="action_cancel">Cancel</string>
     <string name="action_delete">Delete</string>
     <string name="action_save">Save</string>
-    <string name="delete_product_request">Delete product?</string>
+
+    <string name="product_delete_request">Delete product?</string>
+    <string name="product_delete_failed">Product delete failed</string>
+    <string name="product_delete_succeeded">Product delete succeeded</string>
 </resources>

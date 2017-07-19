@@ -24,8 +24,6 @@ import static com.market.android.inventory.data.ProductContract.ProductEntry.TAB
 
 public class InventoryActivity extends AppCompatActivity {
 
-    public static final String EXTRA_KEY_PRODUCT = "extra_key_product";
-
     private ProductCursorAdapter mProductCursorAdapter;
 
     @Override
@@ -45,6 +43,7 @@ public class InventoryActivity extends AppCompatActivity {
         mProductCursorAdapter = new ProductCursorAdapter(this, getProductsCursor());
         ListView listView = (ListView) findViewById(R.id.product_list);
         listView.setAdapter(mProductCursorAdapter);
+        listView.setEmptyView(findViewById(R.id.empty_view));
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
