@@ -31,7 +31,7 @@ public class ProductActivity extends AppCompatActivity {
     private EditText mProductName;
     private EditText mProductPrice;
     private EditText mProductSupplierMail;
-    private EditText mProductQuatity;
+    private EditText mProductQuantity;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -48,24 +48,22 @@ public class ProductActivity extends AppCompatActivity {
         mProductName = (EditText) findViewById(R.id.edit_product_name);
         mProductPrice = (EditText) findViewById(R.id.edit_product_price);
         mProductSupplierMail = (EditText) findViewById(R.id.edit_product_supplier_mail);
-        mProductQuatity = (EditText) findViewById(R.id.edit_product_quantity);
+        mProductQuantity = (EditText) findViewById(R.id.edit_product_quantity);
 
         if (mCurrentProductUri != null) {
             Cursor cursor = getContentResolver().query(mCurrentProductUri, PROJECTION, null, null, null);
 
-            if (cursor.moveToNext()) {
-                int nameColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_NAME);
-                int priceColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_PRICE);
-                int supplierMailColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_SUPPLIER_MAIL);
-                int quantityColumnIndex = cursor.getColumnIndex(ProductEntry.COLUMN_PRODUCT_QUANTITY);
+            if (cursor != null) {
+                if (cursor.moveToNext()) {
+                    Product product = ProductEntry.getProductFromCursor(cursor);
+                    mProductName.setText(product.getName());
+                    mProductPrice.setText(Integer.toString(product.getPrice()));
+                    mProductSupplierMail.setText(product.getSupplierMail());
+                    mProductQuantity.setText(Integer.toString(product.getQuantity()));
+                }
 
-                mProductName.setText(cursor.getString(nameColumnIndex));
-                mProductPrice.setText(Integer.toString(cursor.getInt(priceColumnIndex)));
-                mProductSupplierMail.setText(cursor.getString(supplierMailColumnIndex));
-                mProductQuatity.setText(Integer.toString(cursor.getInt(quantityColumnIndex)));
+                cursor.close();
             }
-
-            cursor.close();
         }
     }
 
@@ -139,7 +137,7 @@ public class ProductActivity extends AppCompatActivity {
             throw new IllegalArgumentException(getString(R.string.enter_mail));
         }
 
-        String quantityStr = mProductQuatity.getText().toString().trim();
+        String quantityStr = mProductQuantity.getText().toString().trim();
         if (quantityStr.isEmpty() || quantityStr.startsWith("-")) {
             throw new IllegalArgumentException(getString(R.string.enter_quantity));
         }
@@ -148,7 +146,7 @@ public class ProductActivity extends AppCompatActivity {
         return new Product(name, price, supplierMail, quantity);
     }
 
-    public boolean isEmailValid(String email) {
+    private boolean isEmailValid(String email) {
         return Pattern.compile(MAIL_REG_EXP, Pattern.CASE_INSENSITIVE).matcher(email).matches();
     }
 
