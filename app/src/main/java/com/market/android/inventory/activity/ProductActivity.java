@@ -11,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -65,6 +66,31 @@ public class ProductActivity extends AppCompatActivity {
                 cursor.close();
             }
         }
+
+        findViewById(R.id.inc_quantity).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String quantityStr = mProductQuantity.getText().toString();
+                if (quantityStr.isEmpty()) {
+                    mProductQuantity.setText("1");
+                } else {
+                    mProductQuantity.setText(Integer.toString(Integer.parseInt(quantityStr) + 1));
+                }
+            }
+        });
+
+        findViewById(R.id.dec_quantity).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String quantityStr = mProductQuantity.getText().toString();
+                if (quantityStr.isEmpty()) {
+                    mProductQuantity.setText("0");
+                } else {
+                    int quantity = Integer.parseInt(quantityStr);
+                    if (quantity > 0) mProductQuantity.setText(Integer.toString(quantity - 1));
+                }
+            }
+        });
     }
 
     @Override
