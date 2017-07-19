@@ -184,7 +184,7 @@ public class ProductActivity extends AppCompatActivity {
     }
 
     private void updateProduct(Product product) {
-        getContentResolver().update(ProductEntry.CONTENT_URI, prepareProductValues(product), null, null);
+        getContentResolver().update(mCurrentProductUri, prepareProductValues(product), null, null);
     }
 
     private void deleteProduct() {

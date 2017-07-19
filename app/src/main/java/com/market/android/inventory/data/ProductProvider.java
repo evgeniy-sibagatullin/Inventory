@@ -74,29 +74,9 @@ public final class ProductProvider extends ContentProvider {
     }
 
     private Uri insertProduct(Uri uri, ContentValues contentValues) {
-        String name = contentValues.getAsString(ProductEntry.COLUMN_PRODUCT_NAME);
+        validateValues(contentValues);
+        long id = mDbHelper.getWritableDatabase().insert(TABLE_NAME, null, contentValues);
 
-        if (name == null) {
-            throw new IllegalArgumentException("Product name is mandatory");
-        }
-
-        Integer price = contentValues.getAsInteger(ProductEntry.COLUMN_PRODUCT_PRICE);
-        if (price == null) {
-            throw new IllegalArgumentException("Product price is mandatory");
-        }
-
-        String supplierMail = contentValues.getAsString(ProductEntry.COLUMN_PRODUCT_SUPPLIER_MAIL);
-        if (supplierMail == null) {
-            throw new IllegalArgumentException("Supplier mail is mandatory");
-        }
-
-        Integer quantity = contentValues.getAsInteger(ProductEntry.COLUMN_PRODUCT_QUANTITY);
-        if (quantity != null && quantity < 0) {
-            throw new IllegalArgumentException("Negative quantity not valid");
-        }
-
-        SQLiteDatabase database = mDbHelper.getWritableDatabase();
-        long id = database.insert(TABLE_NAME, null, contentValues);
         if (id == -1) {
             Log.e(LOG_TAG, "Failed to insert row for " + uri);
             return null;
@@ -129,7 +109,52 @@ public final class ProductProvider extends ContentProvider {
     }
 
     @Override
-    public int update(@NonNull Uri uri, @Nullable ContentValues contentValues, @Nullable String s, @Nullable String[] strings) {
-        return 0;
+    public int update(@NonNull Uri uri, @Nullable ContentValues contentValues, @Nullable String selection, @Nullable String[] selectionArgs) {
+        switch (sUriMatcher.match(uri)) {
+            case PRODUCT_ID:
+                selection = ProductEntry._ID + "=?";
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
+                break;
+            default:
+                throw new IllegalArgumentException("Cannot update unknown URI " + uri);
+        }
+
+        return updateProduct(uri, contentValues, selection, selectionArgs);
+    }
+
+    private int updateProduct(Uri uri, ContentValues contentValues, @Nullable String selection, @Nullable String[] selectionArgs) {
+        validateValues(contentValues);
+        int id = mDbHelper.getWritableDatabase().update(TABLE_NAME, contentValues, selection, selectionArgs);
+
+        if (id == -1) {
+            Log.e(LOG_TAG, "Failed to update row for " + uri);
+            return 0;
+        } else {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+
+        return id;
+    }
+
+    private void validateValues(ContentValues contentValues) throws IllegalArgumentException {
+        String name = contentValues.getAsString(ProductEntry.COLUMN_PRODUCT_NAME);
+        if (name == null) {
+            throw new IllegalArgumentException("Product name is mandatory");
+        }
+
+        Integer price = contentValues.getAsInteger(ProductEntry.COLUMN_PRODUCT_PRICE);
+        if (price == null || price <= 0) {
+            throw new IllegalArgumentException("Not positive or null product price is not valid");
+        }
+
+        String supplierMail = contentValues.getAsString(ProductEntry.COLUMN_PRODUCT_SUPPLIER_MAIL);
+        if (supplierMail == null) {
+            throw new IllegalArgumentException("Supplier mail is mandatory");
+        }
+
+        Integer quantity = contentValues.getAsInteger(ProductEntry.COLUMN_PRODUCT_QUANTITY);
+        if (quantity == null || quantity < 0) {
+            throw new IllegalArgumentException("Negative or null quantity is not valid");
+        }
     }
 }
