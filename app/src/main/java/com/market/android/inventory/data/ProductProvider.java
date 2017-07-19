@@ -17,7 +17,7 @@ import static com.market.android.inventory.data.ProductContract.ProductEntry.TAB
 
 public final class ProductProvider extends ContentProvider {
 
-    public static final String LOG_TAG = ProductContract.class.getSimpleName();
+    private static final String LOG_TAG = ProductContract.class.getSimpleName();
     private static final int PRODUCTS = 100;
     private static final int PRODUCT_ID = 101;
     private static final UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
