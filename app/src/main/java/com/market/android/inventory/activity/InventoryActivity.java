@@ -1,7 +1,6 @@
 package com.market.android.inventory.activity;
 
 import android.content.ContentUris;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -17,7 +16,6 @@ import com.market.android.inventory.R;
 import com.market.android.inventory.adapter.ProductCursorAdapter;
 import com.market.android.inventory.data.ProductContract.ProductEntry;
 import com.market.android.inventory.data.ProductDbHelper;
-import com.market.android.inventory.model.Product;
 
 import static com.market.android.inventory.data.ProductContract.ProductEntry.PROJECTION;
 import static com.market.android.inventory.data.ProductContract.ProductEntry.TABLE_NAME;
@@ -64,28 +62,6 @@ public class InventoryActivity extends AppCompatActivity {
     private Cursor getProductsCursor() {
         ProductDbHelper dbHelper = new ProductDbHelper(this);
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = db.query(TABLE_NAME, PROJECTION, null, null, null, null, null);
-
-        if (!cursor.moveToNext()) {
-            insertDummyProducts();
-            cursor = getProductsCursor();
-        }
-
-        return cursor;
-    }
-
-    private void insertDummyProducts() {
-        insertProduct(new Product("Apple", 10, "someTitle@apple.com", 500));
-        insertProduct(new Product("Banana", 30, "otherTitle@banana.com", 10));
-        insertProduct(new Product("Orange", 20, "lastTitle@orange.com", 35));
-    }
-
-    private void insertProduct(Product product) {
-        ContentValues values = new ContentValues();
-        values.put(ProductEntry.COLUMN_PRODUCT_NAME, product.getName());
-        values.put(ProductEntry.COLUMN_PRODUCT_PRICE, product.getPrice());
-        values.put(ProductEntry.COLUMN_PRODUCT_SUPPLIER_MAIL, product.getSupplierMail());
-        values.put(ProductEntry.COLUMN_PRODUCT_QUANTITY, product.getQuantity());
-        getContentResolver().insert(ProductEntry.CONTENT_URI, values);
+        return db.query(TABLE_NAME, PROJECTION, null, null, null, null, null);
     }
 }
