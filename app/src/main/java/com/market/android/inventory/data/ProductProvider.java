@@ -58,8 +58,10 @@ public final class ProductProvider extends ContentProvider {
                 throw new IllegalArgumentException("Cannot query unknown URI " + uri);
         }
 
-        return mDbHelper.getReadableDatabase().query(TABLE_NAME, projection, selection,
+        Cursor cursor = mDbHelper.getReadableDatabase().query(TABLE_NAME, projection, selection,
                 selectionArgs, null, null, sortOrder);
+        cursor.setNotificationUri(getContext().getContentResolver(), uri);
+        return cursor;
     }
 
     @Nullable

@@ -1,9 +1,12 @@
 package com.market.android.inventory.activity;
 
 import android.app.AlertDialog;
+import android.app.LoaderManager;
 import android.content.ContentValues;
+import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -21,9 +24,10 @@ import com.market.android.inventory.model.Product;
 
 import java.util.regex.Pattern;
 
+import static com.market.android.inventory.activity.InventoryActivity.PRODUCT_LOADER;
 import static com.market.android.inventory.data.ProductContract.ProductEntry.PROJECTION;
 
-public class ProductActivity extends AppCompatActivity {
+public class ProductActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String MAIL_REG_EXP = "^[_A-Za-z0-9-+]+(\\.[_A-Za-z0-9-]+)*@"
             + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
@@ -52,19 +56,7 @@ public class ProductActivity extends AppCompatActivity {
         mProductQuantity = (EditText) findViewById(R.id.edit_product_quantity);
 
         if (mCurrentProductUri != null) {
-            Cursor cursor = getContentResolver().query(mCurrentProductUri, PROJECTION, null, null, null);
-
-            if (cursor != null) {
-                if (cursor.moveToNext()) {
-                    Product product = ProductEntry.getProductFromCursor(cursor);
-                    mProductName.setText(product.getName());
-                    mProductPrice.setText(Integer.toString(product.getPrice()));
-                    mProductSupplierMail.setText(product.getSupplierMail());
-                    mProductQuantity.setText(Integer.toString(product.getQuantity()));
-                }
-
-                cursor.close();
-            }
+            getLoaderManager().initLoader(PRODUCT_LOADER, null, this);
         }
 
         findViewById(R.id.inc_quantity).setOnClickListener(new View.OnClickListener() {
@@ -214,5 +206,32 @@ public class ProductActivity extends AppCompatActivity {
     private void deleteProduct() {
         getContentResolver().delete(mCurrentProductUri, null, null);
         finish();
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
+        return new CursorLoader(this, mCurrentProductUri, PROJECTION, null, null, null);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        if (cursor != null && cursor.getCount() > 0) {
+            if (cursor.moveToFirst()) {
+                Product product = ProductEntry.getProductFromCursor(cursor);
+                mProductName.setText(product.getName());
+                mProductPrice.setText(Integer.toString(product.getPrice()));
+                mProductSupplierMail.setText(product.getSupplierMail());
+                mProductQuantity.setText(Integer.toString(product.getQuantity()));
+            }
+            cursor.close();
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        mProductName.setText("");
+        mProductPrice.setText("");
+        mProductSupplierMail.setText("");
+        mProductQuantity.setText("");
     }
 }

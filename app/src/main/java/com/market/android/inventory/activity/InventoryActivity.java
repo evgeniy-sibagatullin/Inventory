@@ -1,9 +1,11 @@
 package com.market.android.inventory.activity;
 
+import android.app.LoaderManager;
 import android.content.ContentUris;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -15,13 +17,12 @@ import android.widget.ListView;
 import com.market.android.inventory.R;
 import com.market.android.inventory.adapter.ProductCursorAdapter;
 import com.market.android.inventory.data.ProductContract.ProductEntry;
-import com.market.android.inventory.data.ProductDbHelper;
 
 import static com.market.android.inventory.data.ProductContract.ProductEntry.PROJECTION;
-import static com.market.android.inventory.data.ProductContract.ProductEntry.TABLE_NAME;
 
-public class InventoryActivity extends AppCompatActivity {
+public class InventoryActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
+    public static final int PRODUCT_LOADER = 0;
     private ProductCursorAdapter mProductCursorAdapter;
 
     @Override
@@ -38,7 +39,7 @@ public class InventoryActivity extends AppCompatActivity {
             }
         });
 
-        mProductCursorAdapter = new ProductCursorAdapter(this, getProductsCursor());
+        mProductCursorAdapter = new ProductCursorAdapter(this, null);
         ListView listView = (ListView) findViewById(R.id.product_list);
         listView.setAdapter(mProductCursorAdapter);
         listView.setEmptyView(findViewById(R.id.empty_view));
@@ -51,17 +52,27 @@ public class InventoryActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        getLoaderManager().initLoader(PRODUCT_LOADER, null, this);
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        mProductCursorAdapter.swapCursor(getProductsCursor());
+    public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
+        switch (loaderId) {
+            case PRODUCT_LOADER:
+                return new CursorLoader(this, ProductEntry.CONTENT_URI, PROJECTION, null, null, null);
+            default:
+                return null;
+        }
     }
 
-    private Cursor getProductsCursor() {
-        ProductDbHelper dbHelper = new ProductDbHelper(this);
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-        return db.query(TABLE_NAME, PROJECTION, null, null, null, null, null);
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        mProductCursorAdapter.swapCursor(cursor);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        mProductCursorAdapter.swapCursor(null);
     }
 }
