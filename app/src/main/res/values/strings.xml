@@ -17,6 +17,7 @@
 
     <string name="add_product">Add Product</string>
     <string name="edit_product">Edit Product</string>
+    <string name="order_product">Order Product</string>
 
     <string name="product_delete_request">Delete product?</string>
     <string name="action_cancel">Cancel</string>
@@ -27,4 +28,8 @@
     <string name="enter_price">Enter a positive price please</string>
     <string name="enter_mail">Enter a valid e-mail please</string>
     <string name="enter_quantity">Enter positive quantity please</string>
+
+    <string name="send_email">Send Email</string>
+    <string name="mail_subject">Order %s</string>
+    <string name="mail_body" formatted="false">We would like to request the mentioned in the subject product.\nThe last defined price was the $%s and could you please provide the supply asap since only %s pieces left.</string>
 </resources>

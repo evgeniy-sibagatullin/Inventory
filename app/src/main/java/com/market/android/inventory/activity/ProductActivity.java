@@ -15,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -31,6 +32,7 @@ public class ProductActivity extends AppCompatActivity implements LoaderManager.
 
     private static final String MAIL_REG_EXP = "^[_A-Za-z0-9-+]+(\\.[_A-Za-z0-9-]+)*@"
             + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+    private static final String MAIL_BLUEPRINT = "mailto:%s?subject=%s&body=%s";
 
     private Uri mCurrentProductUri;
     private EditText mProductName;
@@ -218,6 +220,8 @@ public class ProductActivity extends AppCompatActivity implements LoaderManager.
         if (cursor != null && cursor.getCount() > 0) {
             if (cursor.moveToFirst()) {
                 Product product = ProductEntry.getProductFromCursor(cursor);
+                initializeOrderButton(product);
+
                 mProductName.setText(product.getName());
                 mProductPrice.setText(Integer.toString(product.getPrice()));
                 mProductSupplierMail.setText(product.getSupplierMail());
@@ -233,5 +237,25 @@ public class ProductActivity extends AppCompatActivity implements LoaderManager.
         mProductPrice.setText("");
         mProductSupplierMail.setText("");
         mProductQuantity.setText("");
+    }
+
+    private void initializeOrderButton(final Product product) {
+        Button orderProductButton = (Button) findViewById(R.id.order_product);
+        orderProductButton.setVisibility(View.VISIBLE);
+        orderProductButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(Intent.ACTION_SENDTO);
+                String uriText = String.format(MAIL_BLUEPRINT,
+                        Uri.encode(product.getSupplierMail()),
+                        String.format(getString(R.string.mail_subject),
+                                Uri.encode(product.getName())),
+                        String.format(getString(R.string.mail_body),
+                                Uri.encode(Integer.toString(product.getPrice())),
+                                Uri.encode(Integer.toString(product.getQuantity()))));
+                intent.setData(Uri.parse(uriText));
+                startActivity(Intent.createChooser(intent, getString(R.string.send_email)));
+            }
+        });
     }
 }
