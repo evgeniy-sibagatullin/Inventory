@@ -143,23 +143,23 @@ public class ProductActivity extends AppCompatActivity implements LoaderManager.
     private Product prepareAndValidateProduct() throws IllegalArgumentException {
         String name = mProductName.getText().toString().trim();
         if (name.isEmpty()) {
-            throw new IllegalArgumentException(getString(R.string.enter_name));
+            throw new IllegalArgumentException(getString(R.string.toast_enter_name));
         }
 
         String priceStr = mProductPrice.getText().toString().trim();
         if (priceStr.isEmpty() || priceStr.startsWith("-")) {
-            throw new IllegalArgumentException(getString(R.string.enter_price));
+            throw new IllegalArgumentException(getString(R.string.toast_enter_price));
         }
         int price = Integer.parseInt(priceStr);
 
         String supplierMail = mProductSupplierMail.getText().toString().trim();
         if (supplierMail.isEmpty() || !isEmailValid(supplierMail)) {
-            throw new IllegalArgumentException(getString(R.string.enter_mail));
+            throw new IllegalArgumentException(getString(R.string.toast_enter_mail));
         }
 
         String quantityStr = mProductQuantity.getText().toString().trim();
         if (quantityStr.isEmpty() || quantityStr.startsWith("-")) {
-            throw new IllegalArgumentException(getString(R.string.enter_quantity));
+            throw new IllegalArgumentException(getString(R.string.toast_enter_quantity));
         }
         int quantity = quantityStr.isEmpty() ? 0 : Integer.parseInt(quantityStr);
 
