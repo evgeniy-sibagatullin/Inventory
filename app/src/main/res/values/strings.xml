@@ -30,6 +30,7 @@
     <string name="toast_enter_mail">Enter a valid e-mail please</string>
     <string name="toast_enter_quantity">Enter positive quantity please</string>
     <string name="toast_select_product_image">Select product image please</string>
+    <string name="toast_image_file_not_found">Image file not found</string>
 
     <string name="send_email">Send Email</string>
     <string name="mail_subject">Order %s</string>

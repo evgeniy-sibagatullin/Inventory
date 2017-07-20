@@ -8,6 +8,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -17,12 +19,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.market.android.inventory.R;
 import com.market.android.inventory.data.ProductContract.ProductEntry;
 import com.market.android.inventory.model.Product;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.regex.Pattern;
 
 import static com.market.android.inventory.activity.InventoryActivity.PRODUCT_LOADER;
@@ -33,12 +38,15 @@ public class ProductActivity extends AppCompatActivity implements LoaderManager.
     private static final String MAIL_REG_EXP = "^[_A-Za-z0-9-+]+(\\.[_A-Za-z0-9-]+)*@"
             + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
     private static final String MAIL_BLUEPRINT = "mailto:%s?subject=%s&body=%s";
+    private static final int REQUEST_LOAD_IMAGE_CODE = 200;
 
     private Uri mCurrentProductUri;
     private EditText mProductName;
     private EditText mProductPrice;
     private EditText mProductSupplierMail;
     private EditText mProductQuantity;
+    private ImageView mProductImage;
+    private Uri mProductImageUri;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -56,6 +64,7 @@ public class ProductActivity extends AppCompatActivity implements LoaderManager.
         mProductPrice = (EditText) findViewById(R.id.edit_product_price);
         mProductSupplierMail = (EditText) findViewById(R.id.edit_product_supplier_mail);
         mProductQuantity = (EditText) findViewById(R.id.edit_product_quantity);
+        mProductImage = (ImageView) findViewById(R.id.product_image);
 
         if (mCurrentProductUri != null) {
             getLoaderManager().initLoader(PRODUCT_LOADER, null, this);
@@ -83,6 +92,15 @@ public class ProductActivity extends AppCompatActivity implements LoaderManager.
                     int quantity = Integer.parseInt(quantityStr);
                     if (quantity > 0) mProductQuantity.setText(Integer.toString(quantity - 1));
                 }
+            }
+        });
+
+        findViewById(R.id.select_product_image).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+                photoPickerIntent.setType("image/*");
+                startActivityForResult(photoPickerIntent, REQUEST_LOAD_IMAGE_CODE);
             }
         });
     }
@@ -237,6 +255,25 @@ public class ProductActivity extends AppCompatActivity implements LoaderManager.
         mProductPrice.setText("");
         mProductSupplierMail.setText("");
         mProductQuantity.setText("");
+    }
+
+    @Override
+    protected void onActivityResult(int reqCode, int resultCode, Intent data) {
+        super.onActivityResult(reqCode, resultCode, data);
+        if (reqCode == REQUEST_LOAD_IMAGE_CODE && resultCode == RESULT_OK) {
+            mProductImageUri = data.getData();
+            updateProductImageByUri();
+        }
+    }
+
+    private void updateProductImageByUri() {
+        try {
+            InputStream imageStream = getContentResolver().openInputStream(mProductImageUri);
+            Bitmap selectedImage = BitmapFactory.decodeStream(imageStream);
+            mProductImage.setImageBitmap(selectedImage);
+        } catch (FileNotFoundException e) {
+            Toast.makeText(this, R.string.toast_image_file_not_found, Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void initializeOrderButton(final Product product) {
