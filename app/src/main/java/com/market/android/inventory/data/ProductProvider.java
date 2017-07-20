@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.market.android.inventory.data.ProductContract.ProductEntry;
@@ -140,7 +141,7 @@ public final class ProductProvider extends ContentProvider {
 
     private void validateValues(ContentValues contentValues) throws IllegalArgumentException {
         String name = contentValues.getAsString(ProductEntry.COLUMN_PRODUCT_NAME);
-        if (name == null) {
+        if (TextUtils.isEmpty(name)) {
             throw new IllegalArgumentException("Product name is mandatory");
         }
 
@@ -150,7 +151,7 @@ public final class ProductProvider extends ContentProvider {
         }
 
         String supplierMail = contentValues.getAsString(ProductEntry.COLUMN_PRODUCT_SUPPLIER_MAIL);
-        if (supplierMail == null) {
+        if (TextUtils.isEmpty(supplierMail)) {
             throw new IllegalArgumentException("Supplier mail is mandatory");
         }
 
