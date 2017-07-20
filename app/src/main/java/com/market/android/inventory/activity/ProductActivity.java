@@ -11,6 +11,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -39,6 +40,7 @@ public class ProductActivity extends AppCompatActivity implements LoaderManager.
             + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
     private static final String MAIL_BLUEPRINT = "mailto:%s?subject=%s&body=%s";
     private static final int REQUEST_LOAD_IMAGE_CODE = 200;
+    private static final String PRODUCT_IMAGE_URI_STUB = "product images not used below kitkat";
 
     private Uri mCurrentProductUri;
     private EditText mProductName;
@@ -95,14 +97,21 @@ public class ProductActivity extends AppCompatActivity implements LoaderManager.
             }
         });
 
-        findViewById(R.id.select_product_image).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-                photoPickerIntent.setType("image/*");
-                startActivityForResult(photoPickerIntent, REQUEST_LOAD_IMAGE_CODE);
-            }
-        });
+        Button selectProductImageButton = (Button) findViewById(R.id.select_product_image);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            selectProductImageButton.setVisibility(View.VISIBLE);
+            selectProductImageButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent photoPickerIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                    photoPickerIntent.setType("image/*");
+                    photoPickerIntent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+                    startActivityForResult(photoPickerIntent, REQUEST_LOAD_IMAGE_CODE);
+                }
+            });
+        } else {
+            mProductImageUri = Uri.parse(PRODUCT_IMAGE_URI_STUB);
+        }
     }
 
     @Override
@@ -216,6 +225,7 @@ public class ProductActivity extends AppCompatActivity implements LoaderManager.
         values.put(ProductEntry.COLUMN_PRODUCT_PRICE, product.getPrice());
         values.put(ProductEntry.COLUMN_PRODUCT_SUPPLIER_MAIL, product.getSupplierMail());
         values.put(ProductEntry.COLUMN_PRODUCT_QUANTITY, product.getQuantity());
+        values.put(ProductEntry.COLUMN_PRODUCT_IMAGE_URI_STRING, mProductImageUri.toString());
         return values;
     }
 
@@ -248,6 +258,11 @@ public class ProductActivity extends AppCompatActivity implements LoaderManager.
                 mProductPrice.setText(Integer.toString(product.getPrice()));
                 mProductSupplierMail.setText(product.getSupplierMail());
                 mProductQuantity.setText(Integer.toString(product.getQuantity()));
+
+                mProductImageUri = Uri.parse(product.getImageUriString());
+                if (!PRODUCT_IMAGE_URI_STUB.equals(product.getImageUriString())) {
+                    updateProductImageByUri();
+                }
             }
             cursor.close();
         }
@@ -267,6 +282,13 @@ public class ProductActivity extends AppCompatActivity implements LoaderManager.
         if (reqCode == REQUEST_LOAD_IMAGE_CODE && resultCode == RESULT_OK) {
             mProductImageUri = data.getData();
             updateProductImageByUri();
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                final int takeFlags = data.getFlags()
+                        & (Intent.FLAG_GRANT_READ_URI_PERMISSION
+                        | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                getContentResolver().takePersistableUriPermission(mProductImageUri, takeFlags);
+            }
         }
     }
 
