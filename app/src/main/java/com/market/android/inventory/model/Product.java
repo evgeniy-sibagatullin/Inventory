@@ -8,12 +8,14 @@ public class Product implements Serializable {
     private final int price;
     private final String supplierMail;
     private final int quantity;
+    private final String imageUriString;
 
-    public Product(String name, int price, String supplierMail, int quantity) {
+    public Product(String name, int price, String supplierMail, int quantity, String imageUriString) {
         this.name = name;
         this.price = price;
         this.supplierMail = supplierMail;
         this.quantity = quantity;
+        this.imageUriString = imageUriString;
     }
 
     public String getName() {
@@ -32,6 +34,10 @@ public class Product implements Serializable {
         return quantity;
     }
 
+    public String getImageUriString() {
+        return imageUriString;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -42,7 +48,8 @@ public class Product implements Serializable {
         return price == product.price &&
                 quantity == product.quantity &&
                 name.equals(product.name) &&
-                supplierMail.equals(product.supplierMail);
+                supplierMail.equals(product.supplierMail) &&
+                imageUriString.equals(product.imageUriString);
     }
 
     @Override
@@ -51,6 +58,7 @@ public class Product implements Serializable {
         result = 31 * result + price;
         result = 31 * result + supplierMail.hashCode();
         result = 31 * result + quantity;
+        result = 31 * result + imageUriString.hashCode();
         return result;
     }
 
@@ -61,6 +69,7 @@ public class Product implements Serializable {
                 ", price=" + price +
                 ", supplierMail='" + supplierMail + '\'' +
                 ", quantity=" + quantity +
+                ", imageUriString=" + imageUriString +
                 '}';
     }
 }

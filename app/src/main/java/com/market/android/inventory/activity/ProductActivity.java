@@ -181,7 +181,11 @@ public class ProductActivity extends AppCompatActivity implements LoaderManager.
         }
         int quantity = quantityStr.isEmpty() ? 0 : Integer.parseInt(quantityStr);
 
-        return new Product(name, price, supplierMail, quantity);
+        if (mProductImageUri == null || mProductImageUri.toString().trim().isEmpty()) {
+            throw new IllegalArgumentException(getString(R.string.toast_select_product_image));
+        }
+
+        return new Product(name, price, supplierMail, quantity, mProductImageUri.toString());
     }
 
     private boolean isEmailValid(String email) {

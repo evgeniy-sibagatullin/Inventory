@@ -23,21 +23,25 @@ public final class ProductContract {
         public final static String COLUMN_PRODUCT_PRICE = "price";
         public final static String COLUMN_PRODUCT_SUPPLIER_MAIL = "supplier_mail";
         public final static String COLUMN_PRODUCT_QUANTITY = "quantity";
+        public final static String COLUMN_PRODUCT_IMAGE_URI_STRING = "image_uri_string";
         public final static String[] PROJECTION = new String[]{_ID, COLUMN_PRODUCT_NAME,
-                COLUMN_PRODUCT_PRICE, COLUMN_PRODUCT_SUPPLIER_MAIL, COLUMN_PRODUCT_QUANTITY};
+                COLUMN_PRODUCT_PRICE, COLUMN_PRODUCT_SUPPLIER_MAIL,
+                COLUMN_PRODUCT_QUANTITY, COLUMN_PRODUCT_IMAGE_URI_STRING};
 
         public static Product getProductFromCursor(Cursor cursor) {
             int nameColumnIndex = cursor.getColumnIndex(COLUMN_PRODUCT_NAME);
             int priceColumnIndex = cursor.getColumnIndex(COLUMN_PRODUCT_PRICE);
             int supplierMailColumnIndex = cursor.getColumnIndex(COLUMN_PRODUCT_SUPPLIER_MAIL);
             int quantityColumnIndex = cursor.getColumnIndex(COLUMN_PRODUCT_QUANTITY);
+            int imageUriColumnIndex = cursor.getColumnIndex(COLUMN_PRODUCT_IMAGE_URI_STRING);
 
             String name = cursor.getString(nameColumnIndex);
             int price = cursor.getInt(priceColumnIndex);
             String supplierMail = cursor.getString(supplierMailColumnIndex);
             int quantity = cursor.getInt(quantityColumnIndex);
+            String imageUriString = cursor.getString(imageUriColumnIndex);
 
-            return new Product(name, price, supplierMail, quantity);
+            return new Product(name, price, supplierMail, quantity, imageUriString);
         }
     }
 }
